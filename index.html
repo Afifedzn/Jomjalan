@@ -1,0 +1,1386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4ee">
+  <title>JomJalan — Travel, thoughtfully</title>
+  <style>
+    :root {
+      --paper: #f6f4ee;
+      --white: #fffefa;
+      --ink: #1c2824;
+      --muted: #68736d;
+      --line: #e5e7df;
+      --forest: #193f34;
+      --forest2: #285a49;
+      --lime: #d9e7be;
+      --orange: #df7957;
+      --soft: #eff3eb;
+      --shadow: 0 18px 45px #183b2c12;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    img { max-width: 100%; }
+    
+    .topbar {
+      height: 76px;
+      background: #fffefaed;
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(18px, 5vw, 76px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+      letter-spacing: 1.3px;
+      color: var(--forest);
+      font-size: 17px;
+    }
+    .brand-mark {
+      width: 37px;
+      height: 37px;
+      border-radius: 13px;
+      background: var(--forest);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 19px;
+    }
+    .nav { display: flex; gap: 6px; flex-wrap: wrap; }
+    .nav button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 14px;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .nav button.active, .nav button:hover {
+      background: var(--soft);
+      color: var(--forest);
+    }
+    .nav button.nav-cta {
+      background: var(--forest);
+      color: white;
+    }
+    
+    .wrap {
+      max-width: 1280px;
+      margin: auto;
+      padding: 34px clamp(16px, 4vw, 52px) 70px;
+    }
+    .page { display: none; }
+    .page.active { display: block; }
+    
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 1.9px;
+      text-transform: uppercase;
+      font-weight: 850;
+      color: var(--forest2);
+    }
+    .heading-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 24px;
+      margin: 5px 0 25px;
+    }
+    .heading-row h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      letter-spacing: -2.8px;
+      line-height: 1.02;
+      margin: 10px 0 13px;
+      max-width: 740px;
+    }
+    .sub {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 680px;
+      margin: 0;
+    }
+    .hero-copy { max-width: 760px; }
+    
+    .catalog-tools {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search, .filter, .field input, .field select {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--white);
+      padding: 12px 14px;
+      outline: none;
+      color: var(--ink);
+    }
+    .search { width: min(270px, 65vw); }
+    .search:focus, .filter:focus, .field input:focus, .field select:focus {
+      border-color: #91ad98;
+      box-shadow: 0 0 0 3px #285a4914;
+    }
+    
+    .hero-band {
+      background: var(--forest);
+      color: white;
+      border-radius: 24px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 28px 0 26px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-band:after {
+      content: "✳";
+      position: absolute;
+      right: 18%;
+      top: -60px;
+      font-size: 190px;
+      color: #ffffff0d;
+    }
+    .hero-band h2 {
+      margin: 5px 0;
+      font-size: 22px;
+      letter-spacing: -.6px;
+    }
+    .hero-band p {
+      margin: 0;
+      color: #d7e4d9;
+      font-size: 12px;
+    }
+    .hero-stat {
+      font-size: 34px;
+      font-weight: 850;
+      color: var(--lime);
+      white-space: nowrap;
+    }
+    
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 19px;
+    }
+    .trip-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px #183b2c08;
+      transition: .2s;
+      cursor: pointer;
+      min-width: 0;
+    }
+    .trip-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .trip-img {
+      width: 100%;
+      height: 205px;
+      object-fit: cover;
+      display: block;
+      background: #dce5dc;
+    }
+    .trip-info { padding: 17px 18px 18px; }
+    .trip-top, .trip-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 9px;
+    }
+    .tag {
+      font-size: 9px;
+      font-weight: 850;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--soft);
+      color: var(--forest2);
+      padding: 6px 9px;
+      border-radius: 7px;
+    }
+    .days { font-size: 10px; color: var(--muted); }
+    .trip-title {
+      font-size: 19px;
+      letter-spacing: -.45px;
+      margin: 12px 0 5px;
+    }
+    .trip-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      min-height: 39px;
+      margin: 0;
+    }
+    .trip-bottom {
+      border-top: 1px solid #edf0e9;
+      margin-top: 14px;
+      padding-top: 13px;
+      align-items: end;
+    }
+    .price-label {
+      display: block;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .8px;
+      margin-bottom: 3px;
+    }
+    .price { font-size: 18px; color: var(--forest); font-weight: 850; }
+    .arrow {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--forest);
+      color: #fff;
+      font-size: 17px;
+    }
+    
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-top: 4px solid #d9e7be;
+      border-radius: 22px;
+      padding: clamp(20px, 3vw, 34px);
+      box-shadow: 0 6px 24px #183b2c06;
+    }
+    .panel h2 {
+      font-size: 26px;
+      letter-spacing: -.9px;
+      margin: 6px 0;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+    .field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 850;
+      color: var(--muted);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin: 0 0 7px;
+    }
+    .field input, .field select { width: 100%; background: #fcfcf8; }
+    
+    .btn {
+      border: 0;
+      border-radius: 11px;
+      background: var(--forest);
+      color: #fff;
+      padding: 12px 17px;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .4px;
+    }
+    .btn:hover { background: var(--forest2); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn.secondary { background: var(--soft); color: var(--forest); }
+    .form-actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 20px; }
+    
+    .budget-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .estimate {
+      background: linear-gradient(145deg, #214f40, #132f27);
+      color: #fff;
+      border-radius: 22px;
+      padding: 26px;
+      position: sticky;
+      top: 94px;
+    }
+    .estimate .eyebrow { color: var(--lime); }
+    .estimate h3 {
+      font-size: 12px;
+      color: #dce9de;
+      font-weight: 600;
+      margin: 21px 0 4px;
+    }
+    .total {
+      font-size: clamp(35px, 4vw, 50px);
+      letter-spacing: -2px;
+      font-weight: 900;
+      margin: 0;
+    }
+    .estimate-note { color: #d2dfd4; font-size: 11px; line-height: 1.6; }
+    .breakdown {
+      margin-top: 20px;
+      border-top: 1px solid #ffffff33;
+      padding-top: 10px;
+    }
+    .break-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 7px 0;
+      font-size: 11px;
+      color: #e2ebe4;
+    }
+    .break-row strong { color: white; }
+    
+    .notice {
+      padding: 13px 15px;
+      border-radius: 12px;
+      background: var(--soft);
+      color: var(--forest);
+      font-size: 11px;
+      line-height: 1.6;
+      margin-top: 17px;
+    }
+    .estimate .notice { font-size: 13px; font-weight: 700; }
+    
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 19px;
+    }
+    .live-card {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 15px;
+      background: #fffefa;
+    }
+    .live-card .label {
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 850;
+    }
+    .live-card strong { display: block; color: var(--forest); font-size: 16px; margin: 5px 0 2px; }
+    .live-card small { display: block; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: #132b22aa;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      backdrop-filter: blur(5px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(910px, 100%);
+      max-height: 93vh;
+      overflow: auto;
+      background: var(--white);
+      border-radius: 22px;
+      box-shadow: 0 30px 90px #0004;
+    }
+    .modal-hero { height: 245px; position: relative; background: #dfe6d9; }
+    .modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .modal-close {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: #ffffffed;
+      font-size: 21px;
+    }
+    .modal-body { padding: clamp(19px, 3vw, 30px); }
+    .modal-head { display: flex; justify-content: space-between; gap: 18px; align-items: start; }
+    .modal-head h2 { font-size: clamp(27px, 4vw, 37px); letter-spacing: -1.3px; margin: 7px 0; }
+    .modal-price { color: var(--forest); font-weight: 900; font-size: 20px; white-space: nowrap; }
+    .modal-desc { color: var(--muted); font-size: 12px; line-height: 1.7; }
+    
+    .weather-box {
+      background: var(--soft);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin: 15px 0;
+    }
+    .weather-icon { font-size: 27px; }
+    .weather-box strong { display: block; color: var(--forest); font-size: 13px; margin-bottom: 3px; }
+    .weather-box span { font-size: 10px; color: var(--muted); }
+    
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .api-card { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .api-card .label { font-size: 9px; color: var(--muted); letter-spacing: .9px; text-transform: uppercase; font-weight: 850; }
+    .api-card strong { display: block; color: var(--forest); font-size: 14px; margin: 4px 0; }
+    .api-card small { font-size: 10px; color: var(--muted); line-height: 1.45; }
+    
+    .modal-columns { display: grid; grid-template-columns: 1.2fr .8fr; gap: 20px; margin-top: 22px; }
+    .modal h3 { font-size: 11px; letter-spacing: .7px; text-transform: uppercase; color: var(--forest); margin: 0 0 10px; }
+    .itinerary { list-style: none; padding: 0; margin: 0; }
+    .itinerary li {
+      display: grid;
+      grid-template-columns: 55px 1fr;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf0e9;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .itinerary li b { color: var(--forest); }
+    .include-list { padding-left: 16px; color: var(--muted); font-size: 11px; line-height: 1.9; }
+    .weather-status { font-size: 10px; color: var(--muted); line-height: 1.6; }
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+    }
+    
+    .table-wrap { overflow-x: auto; margin-top: 18px; }
+    table { border-collapse: collapse; width: 100%; min-width: 620px; }
+    th, td { text-align: left; padding: 13px; border-bottom: 1px solid var(--line); font-size: 11px; }
+    th { font-size: 9px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); background: #f8faf6; }
+    
+    .mini-btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 7px 9px;
+      font-size: 10px;
+      font-weight: 850;
+      background: var(--soft);
+      color: var(--forest);
+      margin-right: 4px;
+    }
+    .mini-btn.danger { background: #f9eae4; color: #a34634; }
+    
+    .footer { text-align: center; padding-top: 28px; color: #858f87; font-size: 10px; }
+    .empty { padding: 36px; text-align: center; color: var(--muted); grid-column: 1/-1; }
+    .api-note { font-size: 10px; color: var(--muted); margin: 12px 0 0; }
+    .page-title-actions { display: flex; gap: 10px; align-items: center; }
+    
+    #itinerary-body input, #saved-itinerary-body input {
+      width: 100%;
+      min-width: 160px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      border-radius: 9px;
+      background: #fffefa;
+    }
+    dialog { border: 0; border-radius: 22px; width: min(1100px, 95vw); max-height: 90vh; padding: 30px; }
+    dialog::backdrop { background: #132b22aa; }
+    
+    @media(max-width: 900px) {
+      .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .budget-layout { grid-template-columns: 1fr; }
+      .estimate { position: static; }
+      .api-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .modal-columns { grid-template-columns: 1fr; }
+    }
+    @media(max-width: 620px) {
+      .topbar {
+        height: auto;
+        min-height: 69px;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 13px 16px;
+        gap: 10px;
+      }
+      .nav { width: 100%; overflow-x: auto; padding-bottom: 2px; }
+      .nav button { white-space: nowrap; padding: 9px 10px; font-size: 10px; }
+      .nav .nav-cta { margin-left: auto; }
+      .wrap { padding-top: 24px; }
+      .heading-row { align-items: flex-start; flex-direction: column; }
+      .catalog-tools { width: 100%; }
+      .search { flex: 1; width: 100%; }
+      .catalog-grid { grid-template-columns: 1fr; gap: 13px; }
+      .trip-card { display: grid; grid-template-columns: 38% 62%; }
+      .trip-img { height: 100%; min-height: 205px; }
+      .trip-info { padding: 13px; }
+      .trip-title { font-size: 15px; }
+      .trip-desc { min-height: 0; font-size: 10px; }
+      .trip-top { align-items: flex-start; flex-direction: column; gap: 6px; }
+      .trip-bottom { margin-top: 10px; }
+      .price { font-size: 15px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .hero-band { align-items: flex-start; flex-direction: column; padding: 20px; }
+      .hero-stat { font-size: 28px; }
+      .modal-hero { height: 190px; }
+      .modal-head { flex-direction: column; gap: 2px; }
+      .modal-price { font-size: 18px; }
+      .modal-footer { align-items: flex-start; flex-direction: column; }
+      .live-grid { grid-template-columns: 1fr 1fr; }
+      .api-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">✳</span> JOMJALAN</div>
+    <nav class="nav" aria-label="Main navigation">
+      <button class="active" data-page="catalog">Explore</button>
+      <button data-page="budget">Budget planner</button>
+      <button data-page="itinerary">Daily planner</button>
+      <button data-page="suggestions">Activity finder</button>
+      <button data-page="plans" class="nav-cta">My trips</button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <!-- Explore Section -->
+    <section id="page-catalog" class="page active">
+      <div class="heading-row">
+        <div class="hero-copy">
+          <div class="eyebrow">Small plans, big memories</div>
+          <h1>Find a place that feels like you.</h1>
+          <p class="sub">Explore hand-picked city breaks, compare practical travel details and build a trip plan that fits your budget.</p>
+        </div>
+        <div class="catalog-tools">
+          <input id="search-dest" class="search" type="search" placeholder="Search a city or country…">
+          <select id="region-filter" class="filter" aria-label="Filter by region">
+            <option value="all">Everywhere</option>
+            <option>Asia</option>
+            <option>Europe</option>
+            <option>Americas</option>
+            <option>Oceania</option>
+          </select>
+        </div>
+      </div>
+      <div class="hero-band">
+        <div>
+          <div class="eyebrow" style="color:#d9e7be">A better way to plan</div>
+          <h2>Your next story starts with a destination.</h2>
+          <p>Compare weather, travel time, stay estimates and local holidays in one place.</p>
+        </div>
+        <div class="hero-stat">10 <span style="font-size:12px;font-weight:700;color:#d6e3d7">curated escapes</span></div>
+      </div>
+      <div id="product-grid" class="catalog-grid"></div>
+      <div class="footer">JOMJALAN · Travel thoughtfully, explore more.</div>
+    </section>
+
+    <!-- Budget Planner Section -->
+    <section id="page-budget" class="page">
+      <div class="heading-row">
+        <div>
+          <div class="eyebrow">Plan with confidence</div>
+          <h1>Your trip, your budget.</h1>
+          <p class="sub">Build a clear estimate in Malaysian ringgit. Set your spending limit, choose your holiday and compare the complete estimate with your budget.</p>
+        </div>
+      </div>
+      <div class="budget-layout">
+        <div class="panel">
+          <div class="eyebrow">01 / Trip details</div>
+          <h2>Build your estimate</h2>
+          <p class="sub">The total updates as you change the trip.</p>
+          <div class="form-grid">
+            <div class="field">
+              <label for="budget-limit">Total group budget (MYR)</label>
+              <input id="budget-limit" type="number" min="1" value="10000" required>
+            </div>
+            <div class="field">
+              <label for="budget-holiday">Holiday type</label>
+              <select id="budget-holiday">
+                <option value="culture">Culture & history</option>
+                <option value="outdoor">Nature & outdoors</option>
+                <option value="food">Food discovery</option>
+                <option value="indoor">Relaxed city break</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="budget-date">Departure date</label>
+              <input id="budget-date" type="date">
+            </div>
+            <div class="field">
+              <label for="budget-destination">Destination</label>
+              <select id="budget-destination"></select>
+            </div>
+            <div class="field">
+              <label for="budget-nights">Number of nights</label>
+              <input id="budget-nights" type="number" min="1" max="30" value="4">
+            </div>
+            <div class="field">
+              <label for="budget-travellers">Travellers</label>
+              <input id="budget-travellers" type="number" min="1" max="12" value="1">
+            </div>
+            <div class="field">
+              <label for="budget-style">Travel style</label>
+              <select id="budget-style">
+                <option value="budget">Smart saver</option>
+                <option value="standard" selected>Comfort</option>
+                <option value="premium">Premium</option>
+              </select>
+            </div>
+          </div>
+          <div class="notice">Flight and hotel figures are sample estimates. Confirm current fares and room availability with providers before booking.</div>
+          <div class="form-actions">
+            <button class="btn" id="save-estimate">Save to My Trips</button>
+            <button class="btn secondary" id="reset-estimate">Reset</button>
+          </div>
+        </div>
+        <aside class="estimate" aria-live="polite">
+          <div class="eyebrow">02 / Estimated cost</div>
+          <h3 id="estimate-title"></h3>
+          <p class="total" id="estimate-total"></p>
+          <p class="estimate-note" id="estimate-per-person"></p>
+          <div id="budget-balance" class="notice"></div>
+          <p id="converted-total" class="estimate-note"></p>
+          <div class="breakdown" id="estimate-breakdown"></div>
+          <p id="rate-status" class="estimate-note"></p>
+          <p class="estimate-note">Planning estimate only. Prices change with season, availability and booking date.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Itinerary Section -->
+    <section id="page-itinerary" class="page">
+      <div class="heading-row">
+        <div>
+          <div class="eyebrow">Your days, thoughtfully planned</div>
+          <h1>Make room for memories.</h1>
+          <p class="sub">Every destination has a daily planner. Choose a holiday type and nights in Budget planner, then customise each day here.</p>
+        </div>
+        <button class="btn" id="save-itinerary">Save this itinerary</button>
+      </div>
+      <div class="panel">
+        <div class="form-grid">
+          <div class="field">
+            <label for="itinerary-destination">Destination</label>
+            <select id="itinerary-destination"></select>
+          </div>
+          <div>
+            <div class="eyebrow">Trip overview</div>
+            <p id="itinerary-summary"></p>
+          </div>
+        </div>
+        <div id="itinerary-feedback" class="notice" role="status"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Day / date</th>
+                <th>Morning</th>
+                <th>Afternoon</th>
+                <th>Transport suggestion</th>
+              </tr>
+            </thead>
+            <tbody id="itinerary-body"></tbody>
+          </table>
+        </div>
+        <p class="api-note">Activities and transport suggestions are editable planning ideas, not confirmed bookings or live transit timetables.</p>
+      </div>
+    </section>
+
+    <!-- Suggestions Section -->
+    <section id="page-suggestions" class="page">
+      <div class="heading-row">
+        <div>
+          <div class="eyebrow">Make every day count</div>
+          <h1>Find the right activity.</h1>
+          <p class="sub">Get ideas that match the destination, your travel mood and its current weather.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="form-grid">
+          <div class="field">
+            <label for="activity-destination">Destination</label>
+            <select id="activity-destination"></select>
+          </div>
+          <div class="field">
+            <label for="activity-type">Travel mood</label>
+            <select id="activity-type">
+              <option value="all">A bit of everything</option>
+              <option value="outdoor">Outdoors & nature</option>
+              <option value="culture">Culture & history</option>
+              <option value="food">Food & local finds</option>
+              <option value="indoor">Indoor & rainy-day</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" id="find-activities">Find activities</button>
+        </div>
+        <div id="activity-results" class="notice" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- My Trips Section -->
+    <section id="page-plans" class="page">
+      <div class="heading-row">
+        <div>
+          <div class="eyebrow">Your travel workspace</div>
+          <h1>My trips.</h1>
+          <p class="sub">Save and update travel plans on this device. Check destination holidays before choosing your departure date.</p>
+        </div>
+        <button class="btn" id="new-custom-plan">+ Add custom trip</button>
+      </div>
+      <div class="panel">
+        <div id="plan-form" style="display:none">
+          <div class="form-grid">
+            <div class="field">
+              <label for="plan-destination">Destination</label>
+              <select id="plan-destination"></select>
+            </div>
+            <div class="field">
+              <label for="plan-date">Departure date</label>
+              <input id="plan-date" type="date">
+            </div>
+            <div class="field">
+              <label for="plan-activity">Trip focus</label>
+              <input id="plan-activity" placeholder="e.g. Museums and cafés">
+            </div>
+            <div class="field">
+              <label for="plan-cost">Estimated budget (MYR)</label>
+              <input id="plan-cost" type="number" min="0" placeholder="e.g. 5000">
+            </div>
+          </div>
+          <div id="holiday-warning" class="notice" style="display:none"></div>
+          <div class="form-actions">
+            <button class="btn" id="save-custom-plan">Save trip</button>
+            <button class="btn secondary" id="cancel-custom-plan">Cancel</button>
+          </div>
+          <div id="plan-message" class="notice" style="display:none"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Destination</th>
+                <th>Departure</th>
+                <th>Trip focus / package</th>
+                <th>Estimate</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="plan-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Destination Modal -->
+  <div class="modal-backdrop" id="destination-modal" role="dialog" aria-modal="true" aria-label="Destination details">
+    <article class="modal">
+      <div class="modal-hero">
+        <img id="modal-image" src="" alt="">
+        <button class="modal-close" id="close-modal" aria-label="Close details">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-head">
+          <div>
+            <div id="modal-tag" class="eyebrow"></div>
+            <h2 id="modal-title"></h2>
+          </div>
+          <div class="modal-price" id="modal-price"></div>
+        </div>
+        <p class="modal-desc" id="modal-desc"></p>
+        <div class="weather-box">
+          <div class="weather-icon" id="weather-icon">⏳</div>
+          <div>
+            <strong id="weather-title">Loading current weather…</strong>
+            <span id="weather-detail">Open-Meteo weather service</span>
+          </div>
+        </div>
+        <div class="api-grid">
+          <div class="api-card">
+            <div class="label">Flight time</div>
+            <strong id="flight-result">Loading…</strong>
+            <small id="flight-detail">Estimated from Kuala Lumpur</small>
+          </div>
+          <div class="api-card">
+            <div class="label">Hotel per night</div>
+            <strong id="hotel-result">Loading…</strong>
+            <small id="hotel-detail">Sample rate in MYR</small>
+          </div>
+          <div class="api-card">
+            <div class="label">Local currency</div>
+            <strong id="currency-result">Loading…</strong>
+            <small id="currency-detail">Live rate from MYR</small>
+          </div>
+          <div class="api-card">
+            <div class="label">City transport</div>
+            <strong id="route-result">Loading…</strong>
+            <small id="route-detail">Sample city route</small>
+          </div>
+          <div class="api-card" style="grid-column:span 2">
+            <div class="label">Next public holiday</div>
+            <strong id="holiday-result">Loading…</strong>
+            <small id="holiday-detail">Nager.Date public holidays</small>
+          </div>
+        </div>
+        <div class="modal-columns">
+          <div>
+            <h3>Day-by-day itinerary</h3>
+            <ul class="itinerary" id="modal-itinerary"></ul>
+          </div>
+          <div>
+            <h3>Package includes</h3>
+            <ul class="include-list" id="modal-includes"></ul>
+            <h3 style="margin-top:20px">Good to know</h3>
+            <p class="modal-desc" id="modal-tips"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="weather-status" id="weather-updated">Live destination information</div>
+          <button class="btn" id="modal-save-trip">Add to My Trips ↗</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <dialog id="saved-itinerary">
+    <h2>Saved daily plan</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Morning</th>
+            <th>Afternoon</th>
+            <th>Transport</th>
+          </tr>
+        </thead>
+        <tbody id="saved-itinerary-body"></tbody>
+      </table>
+    </div>
+    <button class="btn" id="update-saved-days">Save changes</button>
+    <button class="btn secondary" onclick="this.closest('dialog').close()">Close</button>
+  </dialog>
+
+  <script src="fetch.js"></script>
+  <script>
+    const destinations = [
+      {id:'austin',name:'Austin',country:'United States',region:'Americas',tag:'Music & tech',nights:4,price:7500,perNight:420,flight:3900,hotel:420,food:180,transport:100,activityBudget:550,lat:30.2672,lon:-97.7431,currency:'USD',countryCode:'US',airport:'AUS',image:'images/austin.jpe',photo:'photo-1531218150217-54595bc2b934',desc:'Live music, creative neighbourhoods, green spaces and a fresh Texas food scene.',schedule:['Settle in and explore Downtown Sixth Street','Visit the Texas State Capitol and local museums','Discover South Congress shops and live music','Relax at Zilker Park and Barton Springs','Breakfast and departure'],tips:'Live music venues may have age restrictions or cover charges. Check event schedules before travelling.',activities:{outdoor:['Barton Springs Pool','Zilker Metropolitan Park'],culture:['Bullock Texas State History Museum','Texas State Capitol'],food:['Texas barbecue tasting','South Congress cafés'],indoor:['Blanton Museum of Art','The Contemporary Austin']},route:[-97.7431,30.2672,-97.7505,30.2642]},
+      {id:'toronto',name:'Toronto',country:'Canada',region:'Americas',tag:'City & lakeside',nights:5,price:8900,perNight:520,flight:4300,hotel:520,food:210,transport:100,activityBudget:650,lat:43.6532,lon:-79.3832,currency:'CAD',countryCode:'CA',airport:'YYZ',image:'images/toronto.jpg',photo:'photo-1517090504586-fde19ea6066f',desc:'A cosmopolitan waterfront city with markets, museums, skyline views and easy day trips.',schedule:['Arrive and visit the CN Tower area','Explore St. Lawrence Market and Distillery District','Take a ferry to Toronto Islands','Visit the Royal Ontario Museum and Yorkville','Optional Niagara Falls day trip','Departure'],tips:'Bring layers for lakefront winds. Niagara Falls tours can add substantially to the budget.',activities:{outdoor:['Toronto Islands','Harbourfront waterfront'],culture:['Royal Ontario Museum','Art Gallery of Ontario'],food:['St. Lawrence Market','Kensington Market food walk'],indoor:['Ripley’s Aquarium of Canada','CF Toronto Eaton Centre']},route:[-79.3832,43.6532,-79.3733,43.6544]},
+      {id:'kualalumpur',name:'Kuala Lumpur',country:'Malaysia',region:'Asia',tag:'City & shopping',nights:2,price:800,perNight:190,flight:100,hotel:190,food:80,transport:45,activityBudget:180,lat:3.1390,lon:101.6869,currency:'MYR',countryCode:'MY',airport:'KUL',image:'images/kuala lumpur.jpg',photo:'photo-1596422846543-75c6fc197f07',desc:'Iconic towers, street food, heritage districts and lively shopping streets in one easy city break.',schedule:['Check in, visit KLCC Park and enjoy the skyline','Explore Batu Caves, Central Market and Chinatown','Breakfast and check-out'],tips:'Use rail transit when practical and carry water for outdoor sightseeing.',activities:{outdoor:['KLCC Park','Batu Caves'],culture:['Islamic Arts Museum Malaysia','Merdeka Square'],food:['Jalan Alor food street','Kampung Baru food walk'],indoor:['Suria KLCC','Central Market']},route:[101.6869,3.1390,101.7117,3.1579]},
+      {id:'paris',name:'Paris',country:'France',region:'Europe',tag:'Art & romance',nights:5,price:7800,perNight:650,flight:3300,hotel:650,food:220,transport:95,activityBudget:700,lat:48.8566,lon:2.3522,currency:'EUR',countryCode:'FR',airport:'CDG',image:'images/paris.jpg',photo:'photo-1502602898657-3e91760cbb34',desc:'Grand boulevards, world-class art, riverside strolls, bakeries and the Eiffel Tower.',schedule:['Arrive and walk along the Seine','Visit Eiffel Tower, Trocadéro and Champs-Élysées','Explore the Louvre area and Île de la Cité','Choose Musée d’Orsay or Montmartre','Café morning and neighbourhood shopping','Check out and depart'],tips:'Book major museums and Eiffel Tower access ahead. Keep valuables secure in crowded areas.',activities:{outdoor:['Walk along the Seine','Tuileries Garden and Luxembourg Gardens'],culture:['Louvre Museum','Musée d’Orsay and Sainte-Chapelle'],food:['French bakery breakfast','Latin Quarter cafés and local bistros'],indoor:['Musée d’Orsay','Covered passages and shopping arcades']},route:[2.3522,48.8566,2.2945,48.8584]},
+      {id:'saopaulo',name:'São Paulo',country:'Brazil',region:'Americas',tag:'Art & culture',nights:7,price:14200,perNight:420,flight:8300,hotel:420,food:150,transport:90,activityBudget:450,lat:-23.5505,lon:-46.6333,currency:'BRL',countryCode:'BR',airport:'GRU',image:'images/sao paulo.jpg',photo:'photo-1543059080-f9b1272213d5',desc:'Contemporary art, bold architecture, diverse food and vibrant creative districts.',schedule:['Arrive and stroll Avenida Paulista','Visit São Paulo Museum of Art','Explore the historic centre with a guide','Spend time in Ibirapuera Park','Discover Vila Madalena street art','Try the Municipal Market and local cuisine','Visit the Botanical Garden','Departure'],tips:'Use trusted transport after dark and plan travel time carefully across this large city.',activities:{outdoor:['Ibirapuera Park','Jardim Botânico'],culture:['MASP','Pinacoteca de São Paulo'],food:['Mercadão Municipal','Liberdade food district'],indoor:['Museum of the Portuguese Language','MASP galleries']},route:[-46.6333,-23.5505,-46.6559,-23.5614]},
+      {id:'tokyo',name:'Tokyo',country:'Japan',region:'Asia',tag:'Modern & tradition',nights:6,price:6500,perNight:390,flight:2300,hotel:390,food:130,transport:70,activityBudget:450,lat:35.6762,lon:139.6503,currency:'JPY',countryCode:'JP',airport:'HND',image:'images/tokyo.jpe',photo:'photo-1540959733332-eab4deabeeaf',desc:'Neon-lit streets, peaceful shrines, specialist shops, pop culture and exceptional food.',schedule:['Arrive and explore Shinjuku','Visit Sensō-ji Temple and Asakusa','Discover Shibuya Crossing and Harajuku','Optional Mount Fuji day trip','Explore Akihabara and its tech shops','Visit Odaiba and teamLab Planets','Departure'],tips:'Get an IC transit card and check attraction reservations, especially timed-entry experiences.',activities:{outdoor:['Shinjuku Gyoen National Garden','Meiji Jingu forest paths'],culture:['Sensō-ji Temple','Edo-Tokyo area museums'],food:['Tsukiji Outer Market','Ramen and depachika food halls'],indoor:['teamLab Planets','Akihabara arcades and shops']},route:[139.6503,35.6762,139.7967,35.7148]},
+      {id:'oslo',name:'Oslo',country:'Norway',region:'Europe',tag:'Fjord & Nordic',nights:6,price:15400,perNight:720,flight:8000,hotel:720,food:270,transport:120,activityBudget:800,lat:59.9139,lon:10.7522,currency:'NOK',countryCode:'NO',airport:'OSL',image:'images/oslo.jpg',photo:'photo-1509356843151-3e7d96241e11',desc:'Waterfront architecture, design museums, green spaces and beautiful fjord scenery.',schedule:['Walk along Karl Johans gate','Explore the Opera House and MUNCH museum','Visit Vigeland Sculpture Park','Take a fjord cruise and visit a maritime museum','See the Holmenkollen viewpoint','Explore local food halls and design shops','Departure'],tips:'Norway is expensive; reserve extra for restaurant meals and seasonal fjord excursions.',activities:{outdoor:['Fjord waterfront walk','Vigeland Sculpture Park'],culture:['MUNCH museum','Norwegian Folk Museum'],food:['Mathallen food hall','Norwegian bakery and seafood tasting'],indoor:['National Museum','Fram Museum']},route:[10.7522,59.9139,10.7531,59.9075]},
+      {id:'auckland',name:'Auckland',country:'New Zealand',region:'Oceania',tag:'Coast & nature',nights:6,price:13800,perNight:500,flight:7200,hotel:500,food:190,transport:100,activityBudget:600,lat:-36.8509,lon:174.7645,currency:'NZD',countryCode:'NZ',airport:'AKL',image:'images/auckland.jpe',photo:'photo-1507699622108-4be3abd695ad',desc:'A harbour city surrounded by volcanic hills, coastal walks and dramatic nature.',schedule:['Arrive and explore Viaduct Harbour','Visit Sky Tower and Auckland Domain','Take a day trip to Waiheke Island','Hike Rangitoto Island if conditions allow','Explore Piha Beach and the west coast','Optional Hobbiton day trip','Departure'],tips:'Check ferry and trail conditions. Popular day trips may need advance booking.',activities:{outdoor:['Rangitoto Island hike','Auckland Domain'],culture:['Auckland War Memorial Museum','Māori cultural experiences'],food:['Auckland waterfront eateries','Local farmers markets'],indoor:['Auckland Art Gallery','New Zealand Maritime Museum']},route:[174.7645,-36.8509,174.7633,-36.8521]},
+      {id:'zurich',name:'Zurich',country:'Switzerland',region:'Europe',tag:'Alpine gateway',nights:5,price:16200,perNight:760,flight:8200,hotel:760,food:280,transport:120,activityBudget:700,lat:47.3769,lon:8.5417,currency:'CHF',countryCode:'CH',airport:'ZRH',image:'images/zurich.jpg',photo:'photo-1515488764276-beab7607c1e6',desc:'A polished lakeside city with a charming old town, mountain viewpoints and Swiss chocolate.',schedule:['Arrive and explore Bahnhofstrasse','Walk the Old Town and riverside','Visit Uetliberg for panoramic views','Optional Rhine Falls and Schaffhausen day trip','Swiss National Museum and chocolate shop','Departure'],tips:'Swiss rail travel is efficient but costly. Compare day passes with individual tickets.',activities:{outdoor:['Lake Zurich promenade','Uetliberg mountain viewpoint'],culture:['Swiss National Museum','Zurich Old Town'],food:['Swiss chocolate tasting','Traditional Swiss rösti'],indoor:['Kunsthaus Zürich','Swiss National Museum']},route:[8.5417,47.3769,8.5443,47.3705]},
+      {id:'santiago',name:'Santiago',country:'Chile',region:'Americas',tag:'City & Andes',nights:7,price:13500,perNight:400,flight:7800,hotel:400,food:145,transport:85,activityBudget:500,lat:-33.4489,lon:-70.6693,currency:'CLP',countryCode:'CL',airport:'SCL',image:'images/santiago.jpg',photo:'photo-1516026672322-bc52d61a55d5',desc:'A lively Chilean capital framed by the Andes, markets and day trips into nature.',schedule:['Arrive and explore Plaza de Armas','Ride the funicular up Cerro San Cristóbal','Day trip to colourful Valparaíso','Explore the Andes foothills with a reputable tour','Enjoy a local food and wine excursion','Visit Sky Costanera observation deck','Browse artisan markets and neighbourhoods','Departure'],tips:'Mountain weather can change quickly. Check tour inclusions and altitude expectations.',activities:{outdoor:['Cerro San Cristóbal','Andes foothills day tour'],culture:['Museum of Memory and Human Rights','Plaza de Armas'],food:['La Vega Central market','Chilean empanadas'],indoor:['Sky Costanera','Chilean Museum of Pre-Columbian Art']},route:[-70.6693,-33.4489,-70.6483,-33.4255]}
+    ];
+
+    const money = n => 'RM ' + Math.round(Number(n) || 0).toLocaleString('en-MY');
+    const grid = document.getElementById('product-grid');
+    let selectedDestination = null;
+    let editPlanId = null;
+
+    function esc(value) {
+      return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function photoUrl(d) {
+      return `https://images.unsplash.com/${d.photo}?auto=format&fit=crop&w=1000&q=82`;
+    }
+    function setImage(img, d) {
+      img.src = d.image;
+      img.onerror = () => {
+        img.onerror = () => { img.src = `https://placehold.co/1000x600/dae5da/193f34?text=${encodeURIComponent(d.name)}`; };
+        img.src = photoUrl(d);
+      };
+    }
+    function renderCatalog() {
+      const q = document.getElementById('search-dest').value.toLowerCase().trim();
+      const r = document.getElementById('region-filter').value;
+      const list = destinations.filter(d => (d.name + ' ' + d.country + ' ' + d.tag).toLowerCase().includes(q) && (r === 'all' || d.region === r));
+      grid.innerHTML = list.map(d => `
+        <article class="trip-card" tabindex="0" role="button" aria-label="View ${esc(d.name)} details" data-id="${d.id}">
+          <img class="trip-img" src="${esc(d.image)}" data-photo="${esc(d.photo)}" alt="${esc(d.name)}, ${esc(d.country)}" loading="lazy">
+          <div class="trip-info">
+            <div class="trip-top">
+              <span class="tag">${esc(d.tag)}</span>
+              <span class="days">${d.nights + 1}D${d.nights}N</span>
+            </div>
+            <h2 class="trip-title">${esc(d.name)}, ${esc(d.country)}</h2>
+            <p class="trip-desc">${esc(d.desc)}</p>
+            <div class="trip-bottom">
+              <div>
+                <span class="price-label">PACKAGE ESTIMATE FROM</span>
+                <span class="price">${money(d.price)}</span>
+              </div>
+              <button class="arrow" aria-label="View details">↗</button>
+            </div>
+          </div>
+        </article>
+      `).join('') || '<div class="empty">No destinations match your search.</div>';
+
+      grid.querySelectorAll('.trip-card').forEach(card => {
+        const d = destinations.find(x => x.id === card.dataset.id);
+        setImage(card.querySelector('img'), d);
+        const open = () => openDestination(d.id);
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+    }
+
+    function openPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + name));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (name === 'plans') renderPlans();
+      if (name === 'budget') refreshBudgetAPI();
+      if (name === 'itinerary') {
+        document.getElementById('itinerary-destination').value = document.getElementById('budget-destination').value;
+        renderItinerary();
+      }
+    }
+
+    document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => openPage(b.dataset.page)));
+    document.getElementById('search-dest').addEventListener('input', renderCatalog);
+    document.getElementById('region-filter').addEventListener('change', renderCatalog);
+
+    const wxLabels = {
+      0: ['Clear sky', '☀️'], 1: ['Mainly clear', '🌤️'], 2: ['Partly cloudy', '⛅'], 3: ['Overcast', '☁️'],
+      45: ['Foggy', '🌫️'], 48: ['Rime fog', '🌫️'], 51: ['Light drizzle', '🌦️'], 53: ['Drizzle', '🌦️'],
+      55: ['Dense drizzle', '🌧️'], 61: ['Light rain', '🌦️'], 63: ['Rain', '🌧️'], 65: ['Heavy rain', '🌧️'],
+      71: ['Light snow', '🌨️'], 73: ['Snow', '❄️'], 75: ['Heavy snow', '❄️'], 80: ['Rain showers', '🌦️'],
+      81: ['Rain showers', '🌧️'], 82: ['Heavy showers', '⛈️'], 95: ['Thunderstorm', '⛈️'],
+      96: ['Thunderstorm with hail', '⛈️'], 99: ['Severe thunderstorm', '⛈️']
+    };
+
+    async function openDestination(id) {
+      const d = destinations.find(x => x.id === id);
+      if (!d) return;
+      selectedDestination = d;
+      const modal = document.getElementById('destination-modal'), im = document.getElementById('modal-image');
+      setImage(im, d);
+      im.alt = `${d.name}, ${d.country}`;
+      document.getElementById('modal-tag').textContent = `${d.region} · ${d.tag}`;
+      document.getElementById('modal-title').textContent = `${d.name}, ${d.country}`;
+      document.getElementById('modal-price').textContent = `${money(d.price)} / person`;
+      document.getElementById('modal-desc').textContent = `${d.desc} Package price is a planning estimate from Kuala Lumpur.`;
+      document.getElementById('modal-itinerary').innerHTML = d.schedule.map((s, i) => `<li><b>DAY ${i + 1}</b><span>${esc(s)}</span></li>`).join('');
+      document.getElementById('modal-includes').innerHTML = ['Return flight estimate from Kuala Lumpur', 'Hotel rate estimate', 'Meals and local transport allowance', 'Selected attractions and itinerary planning'].map(x => `<li>${esc(x)}</li>`).join('');
+      document.getElementById('modal-tips').textContent = d.tips;
+      ['flight-result', 'hotel-result', 'currency-result', 'route-result', 'holiday-result'].forEach(id => document.getElementById(id).textContent = 'Loading…');
+      document.getElementById('weather-icon').textContent = '⏳';
+      document.getElementById('weather-title').textContent = 'Loading current weather…';
+      document.getElementById('weather-detail').textContent = 'Open-Meteo weather service';
+      document.getElementById('weather-updated').textContent = 'Live destination information is loading.';
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      const results = await Promise.allSettled([
+        JomJalanAPI.getWeather(d),
+        JomJalanAPI.getFlightEstimate(d),
+        JomJalanAPI.getHotelRates(d, 'standard'),
+        JomJalanAPI.getCurrencyRate('MYR', d.currency),
+        JomJalanAPI.getCityRoute(d),
+        JomJalanAPI.getNextHoliday(d)
+      ]);
+      if (selectedDestination?.id !== d.id) return;
+
+      const [w, f, h, c, rt, ho] = results;
+      if (w.status === 'fulfilled') {
+        const x = w.value, lab = wxLabels[x.weatherCode] || ['Variable conditions', '🌍'];
+        document.getElementById('weather-icon').textContent = lab[1];
+        document.getElementById('weather-title').textContent = `${lab[0]} · ${Math.round(x.temperature)}°C`;
+        document.getElementById('weather-detail').textContent = `Feels like ${Math.round(x.apparent)}°C · Humidity ${x.humidity}% · Wind ${Math.round(x.wind)} km/h`;
+        document.getElementById('weather-updated').textContent = `Open-Meteo · ${new Date(x.time).toLocaleString()}`;
+      } else {
+        document.getElementById('weather-icon').textContent = '🌍';
+        document.getElementById('weather-title').textContent = 'Weather unavailable';
+        document.getElementById('weather-detail').textContent = 'Check your connection and try again.';
+      }
+
+      if (f.status === 'fulfilled') {
+        document.getElementById('flight-result').textContent = f.value.duration;
+        document.getElementById('flight-detail').textContent = `${f.value.route} · Indicative duration`;
+      } else {
+        document.getElementById('flight-result').textContent = 'Unavailable';
+      }
+
+      if (h.status === 'fulfilled') {
+        document.getElementById('hotel-result').textContent = `${money(h.value.perNight)} / night`;
+        document.getElementById('hotel-detail').textContent = `${h.value.label} · sample rate, not a booking quote`;
+      } else {
+        document.getElementById('hotel-result').textContent = 'Unavailable';
+      }
+
+      if (c.status === 'fulfilled') {
+        document.getElementById('currency-result').textContent = c.value.rate ? `${Number(c.value.rate).toFixed(d.currency === 'JPY' ? 2 : 4)} ${d.currency}` : '1.00 MYR';
+        document.getElementById('currency-detail').textContent = c.value.rate ? `for RM 1 · ${c.value.date} · Frankfurter` : 'MYR destination';
+      } else {
+        document.getElementById('currency-result').textContent = 'Unavailable';
+        document.getElementById('currency-detail').textContent = 'Frankfurter rate service unavailable.';
+      }
+
+      if (rt.status === 'fulfilled') {
+        document.getElementById('route-result').textContent = `${rt.value.distance} km`;
+        document.getElementById('route-detail').textContent = `${rt.value.duration} by car · OSRM route estimate`;
+      } else {
+        document.getElementById('route-result').textContent = 'Unavailable';
+      }
+
+      if (ho.status === 'fulfilled') {
+        document.getElementById('holiday-result').textContent = ho.value ? `${ho.value.localName} · ${ho.value.date}` : 'No upcoming holiday found';
+        document.getElementById('holiday-detail').textContent = ho.value ? `Public holiday · ${ho.value.name}` : 'Nager.Date returned no upcoming holiday.';
+      } else {
+        document.getElementById('holiday-result').textContent = 'Unavailable';
+        document.getElementById('holiday-detail').textContent = 'Nager.Date service unavailable.';
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('destination-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    document.getElementById('destination-modal').addEventListener('click', e => { if (e.target.id === 'destination-modal') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    function populateSelects() {
+      for (const id of ['budget-destination', 'activity-destination', 'plan-destination', 'itinerary-destination']) {
+        document.getElementById(id).innerHTML = destinations.map(d => `<option value="${d.id}">${esc(d.name)}, ${esc(d.country)}</option>`).join('');
+      }
+      document.getElementById('budget-destination').value = 'paris';
+      document.getElementById('activity-destination').value = 'paris';
+    }
+
+    const multipliers = { budget: .78, standard: 1, premium: 1.65 };
+    const rates = new Map(), hotels = new Map();
+    const holidayFactors = { culture: 1, outdoor: 1.15, food: .85, indoor: .8 };
+    let budgetRequest = 0;
+
+    function estimateData() {
+      const d = destinations.find(x => x.id === document.getElementById('budget-destination').value);
+      const nights = Number(document.getElementById('budget-nights').value);
+      const people = Number(document.getElementById('budget-travellers').value);
+      const limit = Number(document.getElementById('budget-limit').value);
+      const style = document.getElementById('budget-style').value;
+      const holiday = document.getElementById('budget-holiday').value;
+      const date = document.getElementById('budget-date').value;
+      if (!Number.isInteger(nights) || nights < 1 || nights > 30 || !Number.isInteger(people) || people < 1 || people > 12 || !Number.isFinite(limit) || limit <= 0) return null;
+      const mult = multipliers[style], rooms = Math.ceil(people / 2);
+      const nightly = hotels.get(d.id + style)?.perNight ?? d.hotel * mult;
+      const flight = (d.id === 'kualalumpur' ? 0 : d.flight) * people;
+      const hotel = nightly * nights * rooms;
+      const food = d.food * (nights + 1) * people * mult;
+      const transport = d.transport * (nights + 1) * people;
+      const activities = d.activityBudget / d.nights * nights * people * mult * holidayFactors[holiday];
+      const subtotal = flight + hotel + food + transport + activities, buffer = subtotal * .1;
+      return { d, nights, people, limit, style, holiday, date, rooms, nightly, flight, hotel, food, transport, activities, buffer, total: subtotal + buffer };
+    }
+
+    function updateEstimate() {
+      const e = estimateData(), save = document.getElementById('save-estimate');
+      save.disabled = !e;
+      if (!e) {
+        document.getElementById('estimate-total').textContent = 'Check inputs';
+        document.getElementById('budget-balance').textContent = 'Enter a positive budget, 1–30 whole nights and 1–12 travellers.';
+        document.getElementById('estimate-breakdown').textContent = '';
+        document.getElementById('converted-total').textContent = '';
+        return;
+      }
+      document.getElementById('estimate-title').textContent = `${e.d.name} · ${e.nights} nights · ${e.people} travellers · ${e.rooms} room(s)`;
+      document.getElementById('estimate-total').textContent = money(e.total);
+      document.getElementById('estimate-per-person').textContent = `${money(e.total / e.people)} per person · includes 10% contingency`;
+      const remaining = e.limit - e.total;
+      document.getElementById('budget-balance').textContent = remaining >= 0 ? `Within budget · ${money(remaining)} remaining from ${money(e.limit)}` : `Over budget by ${money(-remaining)}. Try fewer nights, Smart saver or another destination.`;
+      document.getElementById('estimate-breakdown').innerHTML = [
+        ['Return flights · group', e.flight],
+        [`Hotel · ${e.rooms} room(s) × ${e.nights} nights`, e.hotel],
+        ['Meals', e.food],
+        ['Local transport', e.transport],
+        ['Activities', e.activities],
+        ['Contingency · 10%', e.buffer]
+      ].map(([k, v]) => `<div class="break-row"><span>${esc(k)}</span><strong>${money(v)}</strong></div>`).join('');
+      
+      const fx = rates.get(e.d.currency);
+      document.getElementById('converted-total').textContent = fx ? `Group total in local currency: ${new Intl.NumberFormat('en', { style: 'currency', currency: e.d.currency }).format(e.total * fx.rate)} · rate date ${fx.date}` : 'Local currency conversion unavailable or loading.';
+      document.getElementById('rate-status').textContent = hotels.has(e.d.id + e.style) ? 'Hotel mock feed applied. Flights, meals and activities are estimates.' : 'Using base hotel estimate until the mock feed loads.';
+    }
+
+    async function refreshBudgetAPI() {
+      const token = ++budgetRequest, e = estimateData();
+      if (!e) return;
+      updateEstimate();
+      const results = await Promise.allSettled([
+        JomJalanAPI.getHotelRates(e.d, e.style),
+        JomJalanAPI.getCurrencyRate('MYR', e.d.currency)
+      ]);
+      if (token !== budgetRequest) return;
+      if (results[0].status === 'fulfilled') hotels.set(e.d.id + e.style, results[0].value);
+      if (results[1].status === 'fulfilled') rates.set(e.d.currency, results[1].value);
+      updateEstimate();
+    }
+
+    ['budget-limit', 'budget-nights', 'budget-travellers', 'budget-holiday', 'budget-date'].forEach(id => document.getElementById(id).addEventListener('input', updateEstimate));
+    ['budget-destination', 'budget-style'].forEach(id => document.getElementById(id).addEventListener('change', refreshBudgetAPI));
+    document.getElementById('reset-estimate').addEventListener('click', () => {
+      document.getElementById('budget-destination').value = 'paris';
+      document.getElementById('budget-nights').value = 4;
+      document.getElementById('budget-travellers').value = 1;
+      document.getElementById('budget-limit').value = 10000;
+      document.getElementById('budget-style').value = 'standard';
+      refreshBudgetAPI();
+    });
+
+    function readPlans() { try { return JSON.parse(localStorage.getItem('jomJalanPlans') || '[]'); } catch { return []; } }
+    function writePlans(items) { localStorage.setItem('jomJalanPlans', JSON.stringify(items)); }
+    function renderPlans() {
+      const plans = readPlans(), tbody = document.getElementById('plan-table-body');
+      if (!plans.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#788278;padding:27px">No trips saved yet. Explore a destination or save a budget estimate.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = plans.map(p => `
+        <tr>
+          <td><strong>${esc(p.destination)}</strong></td>
+          <td>${esc(p.date || 'Not set')}</td>
+          <td>${esc(p.activity || 'Custom trip')}</td>
+          <td>${p.cost ? money(p.cost) : '—'}</td>
+          <td>
+            ${p.itinerary ? `<button class="mini-btn" data-view="${esc(p.id)}">Daily plan</button>` : ''}
+            <button class="mini-btn" data-edit="${esc(p.id)}">Edit</button>
+            <button class="mini-btn danger" data-delete="${esc(p.id)}">Remove</button>
+          </td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('[data-delete]').forEach(b => b.addEventListener('click', () => {
+        writePlans(readPlans().filter(p => String(p.id) !== b.dataset.delete));
+        renderPlans();
+      }));
+      tbody.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => {
+        const p = readPlans().find(x => String(x.id) === b.dataset.edit);
+        if (!p) return;
+        editPlanId = p.id;
+        document.getElementById('plan-form').style.display = 'block';
+        document.getElementById('plan-destination').value = p.destinationId || 'paris';
+        document.getElementById('plan-date').value = p.date || '';
+        document.getElementById('plan-activity').value = p.activity || '';
+        document.getElementById('plan-cost').value = p.cost || '';
+        document.getElementById('save-custom-plan').textContent = 'Update trip';
+        checkHolidayDate();
+      }));
+    }
+
+    function showMessage(text) {
+      const m = document.getElementById('plan-message');
+      m.style.display = 'block';
+      m.textContent = text;
+    }
+    function addPlan(plan) {
+      const plans = readPlans();
+      plans.push({ id: Date.now(), ...plan });
+      writePlans(plans);
+    }
+
+    document.getElementById('save-estimate').addEventListener('click', () => {
+      const e = estimateData();
+      if (!e) return;
+      addPlan({
+        destination: `${e.d.name}, ${e.d.country}`,
+        destinationId: e.d.id,
+        date: e.date,
+        activity: `${e.nights} nights · ${e.holiday} · ${e.people} travellers`,
+        cost: Math.round(e.total),
+        budget: e.limit,
+        nights: e.nights,
+        people: e.people,
+        holiday: e.holiday,
+        recommendations: e.d.activities[e.holiday],
+        itinerary: buildItinerary(e.d, e)
+      });
+      openPage('plans');
+    });
+
+    document.getElementById('new-custom-plan').addEventListener('click', () => {
+      editPlanId = null;
+      document.getElementById('plan-form').style.display = 'block';
+      document.getElementById('save-custom-plan').textContent = 'Save trip';
+      document.getElementById('plan-destination').value = 'paris';
+      document.getElementById('plan-date').value = '';
+      document.getElementById('plan-activity').value = '';
+      document.getElementById('plan-cost').value = '';
+      document.getElementById('plan-message').style.display = 'none';
+      checkHolidayDate();
+    });
+    document.getElementById('cancel-custom-plan').addEventListener('click', () => document.getElementById('plan-form').style.display = 'none');
+
+    async function checkHolidayDate() {
+      const d = destinations.find(x => x.id === document.getElementById('plan-destination').value),
+            date = document.getElementById('plan-date').value,
+            warning = document.getElementById('holiday-warning');
+      if (!d || !date) { warning.style.display = 'none'; return; }
+      warning.style.display = 'block';
+      warning.textContent = 'Checking destination public holidays…';
+      try {
+        const h = await JomJalanAPI.getHolidayOnDate(d, date);
+        warning.textContent = h ? `Heads up: ${h.localName} is a public holiday on or close to your departure date (${h.date}). Some services may have changed hours.` : 'No public holiday found near this departure date.';
+      } catch {
+        warning.textContent = 'Public holiday information could not be loaded. You can still save your plan.';
+      }
+    }
+    document.getElementById('plan-destination').addEventListener('change', checkHolidayDate);
+    document.getElementById('plan-date').addEventListener('change', checkHolidayDate);
+
+    document.getElementById('save-custom-plan').addEventListener('click', () => {
+      const destinationId = document.getElementById('plan-destination').value,
+            d = destinations.find(x => x.id === destinationId),
+            date = document.getElementById('plan-date').value,
+            activity = document.getElementById('plan-activity').value.trim(),
+            cost = document.getElementById('plan-cost').value;
+      if (!d || !activity) { showMessage('Please choose a destination and enter a trip focus.'); return; }
+      if (cost !== '' && Number(cost) < 0) { showMessage('Budget must be zero or higher.'); return; }
+      const data = { destination: `${d.name}, ${d.country}`, destinationId, date, activity, cost: cost === '' ? '' : Number(cost) };
+      if (editPlanId !== null) {
+        writePlans(readPlans().map(p => p.id === editPlanId ? { ...p, ...data } : p));
+        editPlanId = null;
+      } else {
+        addPlan(data);
+      }
+      document.getElementById('plan-form').style.display = 'none';
+      document.getElementById('save-custom-plan').textContent = 'Save trip';
+      renderPlans();
+    });
+
+    document.getElementById('modal-save-trip').addEventListener('click', () => {
+      if (!selectedDestination) return;
+      const d = selectedDestination;
+      addPlan({ destination: `${d.name}, ${d.country}`, destinationId: d.id, date: '', activity: `${d.nights + 1}D${d.nights}N · ${d.tag} package`, cost: d.price });
+      closeModal();
+      openPage('plans');
+    });
+
+    document.getElementById('find-activities').addEventListener('click', async () => {
+      const d = destinations.find(x => x.id === document.getElementById('activity-destination').value) || destinations[0],
+            chosen = document.getElementById('activity-type').value,
+            out = document.getElementById('activity-results');
+      out.style.display = 'block';
+      out.textContent = 'Checking current weather and matching ideas…';
+      let category = chosen, weatherLine = '';
+      try {
+        const w = await JomJalanAPI.getWeather(d);
+        const rainy = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(w.weatherCode);
+        weatherLine = `Current weather: ${Math.round(w.temperature)}°C${rainy ? ' with possible rain.' : ' — pleasant conditions reported.'} `;
+        if (chosen === 'all') category = rainy ? 'indoor' : 'outdoor';
+        if (rainy && chosen === 'outdoor') {
+          category = 'indoor';
+          weatherLine += 'Indoor alternatives are suggested because rain is reported. ';
+        }
+      } catch {
+        weatherLine = 'Live weather is unavailable. ';
+      }
+      if (category === 'all') category = 'culture';
+      const names = d.activities[category] || [];
+      localStorage.setItem('jomJalanSuggestions', JSON.stringify({ destinationId: d.id, category, names, weatherLine, createdAt: new Date().toISOString() }));
+      out.innerHTML = `<strong>${esc(d.name)} ideas</strong><br>${esc(weatherLine)}<br><br>${names.length ? names.map(esc).join(' · ') : 'No suggestions for this category yet.'}<br><span style="display:block;margin-top:9px">Suggestions are not live opening-hour or ticket availability data.</span>`;
+    });
+
+    function buildItinerary(d, e) {
+      return Array.from({ length: e.nights + 1 }, (_, i) => ({
+        day: i + 1,
+        date: e.date ? new Date(new Date(e.date + 'T12:00:00').getTime() + i * 86400000).toLocaleDateString('en-GB') : 'Not dated',
+        morning: i === e.nights ? 'Check out and departure' : d.activities[e.holiday][i % d.activities[e.holiday].length],
+        afternoon: i === e.nights ? 'Airport / station transfer' : d.schedule[i % d.schedule.length],
+        transport: d.id === 'auckland' ? 'Bus / ferry (check timetable)' : d.id === 'austin' ? 'Bus / taxi' : 'Rail / bus / walking'
+      }));
+    }
+
+    function renderItinerary() {
+      const e = estimateData();
+      if (!e) return;
+      const d = destinations.find(x => x.id === document.getElementById('itinerary-destination').value);
+      const rows = buildItinerary(d, e);
+      document.getElementById('itinerary-summary').textContent = `${d.name}, ${d.country} · ${e.nights + 1} days · ${e.holiday}`;
+      document.getElementById('itinerary-feedback').textContent = 'Edit the daily suggestions, then save your itinerary to My trips.';
+      document.getElementById('itinerary-body').innerHTML = rows.map((r, i) => `
+        <tr>
+          <td>Day ${r.day}<br>${esc(r.date)}</td>
+          ${['morning', 'afternoon', 'transport'].map(key => `<td><input aria-label="Day ${r.day} ${key}" data-day="${i}" data-key="${key}" value="${esc(r[key])}"></td>`).join('')}
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('itinerary-destination').addEventListener('change', renderItinerary);
+    document.getElementById('save-itinerary').addEventListener('click', () => {
+      const e = estimateData();
+      if (!e) return;
+      const d = destinations.find(x => x.id === document.getElementById('itinerary-destination').value),
+            rows = buildItinerary(d, e);
+      document.querySelectorAll('#itinerary-body input').forEach(input => rows[Number(input.dataset.day)][input.dataset.key] = input.value.trim());
+      addPlan({
+        destination: `${d.name}, ${d.country}`,
+        destinationId: d.id,
+        date: e.date,
+        activity: `${e.nights + 1}-day ${e.holiday} itinerary`,
+        cost: d.id === e.d.id ? Math.round(e.total) : '',
+        itinerary: rows,
+        recommendations: d.activities[e.holiday]
+      });
+      document.getElementById('itinerary-feedback').textContent = 'Itinerary saved to My trips.';
+    });
+
+    document.getElementById('plan-table-body').addEventListener('click', event => {
+      const button = event.target.closest('[data-view]');
+      if (!button) return;
+      const p = readPlans().find(x => String(x.id) === button.dataset.view);
+      if (!p?.itinerary) return;
+      const body = document.getElementById('saved-itinerary-body');
+      body.innerHTML = p.itinerary.map((r, i) => `
+        <tr>
+          <td>Day ${r.day}<br>${esc(r.date)}</td>
+          ${['morning', 'afternoon', 'transport'].map(key => `<td><input data-day="${i}" data-key="${key}" aria-label="Day ${r.day} ${key}" value="${esc(r[key])}"></td>`).join('')}
+        </tr>
+      `).join('');
+      document.getElementById('saved-itinerary').dataset.id = String(p.id);
+      document.getElementById('saved-itinerary').showModal();
+    });
+
+    document.getElementById('update-saved-days').addEventListener('click', () => {
+      const dialog = document.getElementById('saved-itinerary'),
+            plans = readPlans(),
+            p = plans.find(x => String(x.id) === dialog.dataset.id);
+      if (!p) return;
+      document.querySelectorAll('#saved-itinerary-body input').forEach(input => p.itinerary[Number(input.dataset.day)][input.dataset.key] = input.value.trim());
+      writePlans(plans);
+      dialog.close();
+    });
+
+    renderCatalog();
+    populateSelects();
+    updateEstimate();
+    refreshBudgetAPI();
+    renderPlans();
+  </script>
+</body>
+</html>

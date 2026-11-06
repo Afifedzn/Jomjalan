@@ -1,0 +1,15 @@
+{
+  "name": "jomjalan-app",
+  "version": "1.0.0",
+  "description": "Travel Agency and Planner Desktop Application",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^30.0.0"
+  }
+}
